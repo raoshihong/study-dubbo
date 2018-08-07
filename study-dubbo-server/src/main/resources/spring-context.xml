@@ -5,7 +5,7 @@
       http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
       ">
 
-    <import resource="dubbo/provider.xml" />
-    <!--<import resource="dubbo/provider1.xml" />-->
+    <!--<import resource="dubbo/provider.xml" />-->
+    <import resource="dubbo/provider1.xml" />
 
 </beans>
