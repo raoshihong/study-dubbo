@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+      http://code.alibabatech.com/schema/dubbo
+      http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <dubbo:application name="study-dubbo-client"/>
+
+    <!-- check=true检测是否存在注册中心 -->
+    <dubbo:registry protocol="zookeeper" address="127.0.0.1:2181" check="true" />
+
+    <!--  引用注册中心已经注册的接口服务,loadbalance="roundrobin" 设置负载均衡 -->
+    <dubbo:reference id="demoService" interface="com.rao.study.dubbo.api.service.DemoService" check="true" loadbalance="roundrobin" />
+
+</beans>

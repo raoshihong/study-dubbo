@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+      http://code.alibabatech.com/schema/dubbo
+      http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <dubbo:application name="study-dubbo-client" />
+
+    <!-- check=true检测是否存在注册中心 -->
+    <dubbo:registry address="multicast://224.243.242.241:1287" check="true" />
+
+    <!--  引用注册中心已经注册的接口服务,loadbalance="roundrobin" 设置负载均衡 -->
+    <dubbo:reference id="demoService" interface="com.rao.study.dubbo.api.service.DemoService" check="true" loadbalance="roundrobin" />
+
+    <!-- 直连服务接口,指的是客户端直接跳过注册中心,直接通过url:port 连接服务提供的接口, url="dubbo://服务提供者地址:服务暴露协议端口"
+     cluster设置集群容错策略,failover失败重试,retries设置重试次数-->
+    <dubbo:reference id="directService" interface="com.rao.study.dubbo.api.service.DirectService" check="false" cluster="failover" retries="2" url="dubbo://localhost:20880" filter="directFilter"/>
+
+    <!-- 消费者方引用接口跟服务方定义的协议无关 -->
+    <dubbo:reference interface="com.rao.study.dubbo.api.service.LittleDataService" id="littleDataService" />
+    <dubbo:reference interface="com.rao.study.dubbo.api.service.BigDataService" id="bigDataService" />
+    <dubbo:reference interface="com.rao.study.dubbo.api.service.MutilProtocolService" id="mutilProtocolService" />
+
+    <!-- 通过分组获取对应组的服务接口 -->
+    <dubbo:reference interface="com.rao.study.dubbo.api.service.GroupService" group="feedbackGroup" id="feedbackGroupService" />
+    <dubbo:reference interface="com.rao.study.dubbo.api.service.GroupService" group="memberGroup" id="memberGroupService" />
+</beans>

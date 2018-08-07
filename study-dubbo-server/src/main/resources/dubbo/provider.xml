@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+      http://code.alibabatech.com/schema/dubbo
+      http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!-- 注册到dubbo中,每个应用都是唯一的 -->
+    <dubbo:application name="study-dubbo-server" />
+
+    <!-- 指定注册中心,由注册中心统一管理服务 check=false不检测注册中心是否存在 -->
+    <dubbo:registry address="multicast://224.243.242.241:1287" check="false" />
+
+    <!-- 指定暴露接口的端口 -->
+    <dubbo:protocol port="20880" /> <!-- 协议是服务端用来暴露接口的,所以消费者端不用定义协议 -->
+
+    <!-- 使用多协议暴露服务,多个协议暴露服务的好处是可以将大数据传送和小数据高并发传送按协议进行分离 -->
+    <dubbo:protocol name="dubbo" port="20881" />
+    <dubbo:protocol name="rmi" port="20882" />
+
+    <!-- 声明需要暴露的服务接口,并指明这个接口的实现类,cluster=failfast设置集群容错 -->
+    <dubbo:service interface="com.rao.study.dubbo.api.service.DemoService" ref="demoServiceImpl" cluster="failfast" />
+    <bean id="demoServiceImpl" class="com.rao.study.dubbo.server.service.impl.DemoServiceImpl" />
+
+    <dubbo:service interface="com.rao.study.dubbo.api.service.DirectService" ref="directService"/>
+    <bean id="directService" class="com.rao.study.dubbo.server.service.impl.DirectServiceImpl"/>
+
+
+    <!-- 声明服务接口,使用不同的协议,通过protocol指明使用的协议 -->
+    <dubbo:service interface="com.rao.study.dubbo.api.service.LittleDataService" protocol="dubbo" ref="littleDataServiceImpl" />
+    <bean id="littleDataServiceImpl" class="com.rao.study.dubbo.server.service.impl.LittleDataServiceImpl" />
+    
+    <!-- 指明协议 -->
+    <dubbo:service interface="com.rao.study.dubbo.api.service.BigDataService" protocol="rmi"  ref="bigDataServiceImpl"/>
+    <bean id="bigDataServiceImpl" class="com.rao.study.dubbo.server.service.impl.BigDataServiceImpl" />
+
+    <!-- 直接通过protocol使用多个协议 -->
+    <dubbo:service interface="com.rao.study.dubbo.api.service.MutilProtocolService" protocol="dubbo,rmi" ref="mutilProtocolServiceImpl" />
+    <bean id="mutilProtocolServiceImpl" class="com.rao.study.dubbo.server.service.impl.MutilProtocolServiceImpl" />
+
+
+    <!-- 进行服务分组 -->
+    <dubbo:service interface="com.rao.study.dubbo.api.service.GroupService" group="feedbackGroup" ref="feedbackGroupServiceImpl" />
+    <bean id="feedbackGroupServiceImpl" class="com.rao.study.dubbo.server.service.impl.FeedbackGroupServiceImpl" />
+    <!-- 进行服务分组 ,filter添加对接口的过滤器-->
+    <dubbo:service interface="com.rao.study.dubbo.api.service.GroupService" group="memberGroup" ref="memberGroupService" filter="demoFilter" />
+    <bean id="memberGroupService" class="com.rao.study.dubbo.server.service.impl.MemberGroupServiceImpl" />
+
+</beans>
